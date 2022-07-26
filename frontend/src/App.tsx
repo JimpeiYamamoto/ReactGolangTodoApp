@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AddMemo } from "./component/AddMemo"
 import { TodoList } from "./component/TodoList"
 import { CompList } from "./component/CompList"
+import axios from "axios";
 
 const dropElementList = (index: number, list: string[]): string[] => {
   const newList = [...list];
@@ -31,6 +32,11 @@ export const App = () => {
     if (title===''||content==='') return;
     setTodoTitle(appendList(title, todoTitle))
     setTodoContent(appendList(content, todoContent));
+    axios
+      .get('http://localhost:8080/addtodo?title=a&content=bbb', {
+        headers: {'Content-Type': 'application/json'}, responseType: 'json'
+      })
+      .then(response => console.log('response body:', response.data));
     setTitle('');
     setContent('');
   }

@@ -3,8 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type Todo struct {
@@ -20,6 +23,7 @@ type Info struct {
 var info = Info{}
 
 func addTodo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	titleqs := r.URL.Query().Get("title")
 	contentqs := r.URL.Query().Get("content")
 	if titleqs == "" {
@@ -166,11 +170,12 @@ func showInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/show", showInfo)
-	http.HandleFunc("/addtodo", addTodo)
-	http.HandleFunc("/donetodo", doneTodo)
-	http.HandleFunc("/backtodo", backTodo)
-	http.HandleFunc("/deletetodo", deleteTodo)
-	http.HandleFunc("/deletecomp", deleteComp)
-	http.ListenAndServe(":8080", nil)
+	r := mux.NewRouter()
+	r.HandleFunc("/show", showInfo).Methods("GET")
+	r.HandleFunc("/addtodo", addTodo).Methods("GET")
+	r.HandleFunc("/donetodo", doneTodo).Methods("GET")
+	r.HandleFunc("/backtodo", backTodo).Methods("GET")
+	r.HandleFunc("/deletetodo", deleteTodo).Methods("GET")
+	r.HandleFunc("/deletecomp", deleteComp).Methods("GET")
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
